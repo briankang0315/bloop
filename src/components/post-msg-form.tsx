@@ -1,8 +1,10 @@
+
 import { addDoc, collection, updateDoc } from "firebase/firestore";
 import { useState } from "react";
 import { styled } from "styled-components";
 import { auth, db, storage } from "../routes/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+
 
 const Form = styled.form`
     display: flex;
@@ -57,7 +59,9 @@ const SubmitBtn = styled.input`
         opacity: 0.9;
     }
 `;
+
 const FileLimit = 1*1024*1024;
+
 export default function PostMsgForm(){
     const [isLoading, setLoading] = useState(false);
     const[bloop, setBloop] = useState("");
@@ -106,6 +110,14 @@ export default function PostMsgForm(){
     };
     return <Form onSubmit={onSubmit}>
         <TextArea required rows={5} maxLength={180}onChange={onChange} value ={bloop} placeholder = "What is happening?" />
+=======
+        if(files && files.length == 1){
+            setFile(files[0]);
+        }
+    }
+    return <Form>
+        <TextArea rows={5} maxLength={180}onChange={onChange} value ={bloop} placeholder = "What is happening?" />
+
         <AttachFileButton htmlFor="file">{file ? "Photo added ✅" : "Add photo"}</AttachFileButton>
         <AttachFileInput onChange={onFileChange} type="file" id="file" accept="image/*"/>
         <SubmitBtn type = "submit" value={isLoading ? "Posting.." : "Post Bloop"}/>
