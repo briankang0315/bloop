@@ -1,44 +1,12 @@
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useState } from "react";
-import { styled } from "styled-components";
 import { auth } from "./firebase";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { FirebaseError } from "firebase/app";
+import { Form, Input, Switcher, Title, Wrapper, Error } from "../components/auth-components";
+import GithubButton from "../components/github-btn";
 
-const Wrapper = styled.div`
-    height: 100%;
-    display:flex;
-    flex-direction:column;
-    align-items: center;
-    width: 420px;
-    padding: 50px, 0px;
-`;
-const Title = styled.h1`
-    font-size:42px;
-    margin-top: 50px;
-`;
-const Form = styled.form`
-    margin-top: 50px;
-    display: flex;
-    flex-direction:column;
-    gap: 10px;
-    width: 100%;
-`;
-const Input = styled.input`
-    padding: 10px 20px;
-    border-radius:50px;
-    border:none;
-    width: 100%;
-    font-size:16px;
-    &[type="submit]{
-        &:hover{
-            opacity:0.8;
-        }
-    }
-`;
-const Error = styled.span`
-    font-weight:600;
-    color:tomato;
-`;
+
 export default function Createaccount() {
     const navigate = useNavigate();
     const [isLoading, setLoading] = useState(false);
@@ -58,6 +26,7 @@ export default function Createaccount() {
     };
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setError("");
         if (isLoading || name === "" || email === "" || password === "") return;
         try {
             setLoading(true);
@@ -68,7 +37,9 @@ export default function Createaccount() {
             });
             navigate("/");
         } catch (e) {
-            //set error
+            if (e instanceof FirebaseError) {
+                setError(e.message);
+            }
         } finally {
             setLoading(false);
         }
@@ -77,7 +48,7 @@ export default function Createaccount() {
     };
 
     return (<Wrapper>
-        <Title> Join X</Title>
+        <Title> Join Bloop</Title>
         <Form onSubmit={onSubmit}>
             <Input onChange={onChange} name="name" value={name} placeholder="Name" type="text" required />
             <Input onChange={onChange} name="email" value={email} placeholder="Email" type="email" required />
@@ -85,5 +56,10 @@ export default function Createaccount() {
             <Input type="submit" value={isLoading ? "Loading..." : "Create Account"} />
         </Form>
         {error !== "" ? <Error>{error}</Error> : null}
+        <Switcher>
+            Already have an account? {""}
+            <Link to="/login">Log in &rarr;</Link>
+        </Switcher>
+        <GithubButton />
     </Wrapper>);
 }
